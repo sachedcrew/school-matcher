@@ -1,0 +1,29 @@
+parameters:
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    # wszystkie klasy w src/
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{DependencyInjection,Entity,Kernel.php}'
+
+    # jawnie oznacz kontrolery jako callable
+    App\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']
+        public: true
+
+    # jawnie zarejestruj FileSchoolRepository
+    App\Infrastructure\School\FileSchoolRepository:
+        arguments:
+            $filePath: '%kernel.project_dir%/data/schools.txt'
+
+    # interfejs -> implementacja
+    App\Domain\School\SchoolRepository: '@App\Infrastructure\School\FileSchoolRepository'
+
+    # jawnie SchoolMatcher (bo jest wstrzykiwany do SchoolMatchService)
+    App\Application\School\SchoolMatcher: ~
